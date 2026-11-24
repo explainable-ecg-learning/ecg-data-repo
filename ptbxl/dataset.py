@@ -49,7 +49,7 @@ class PTBXLDataset(Dataset):
         "jt", "T-Onset", "(t", "T-Peak", "t)", "T-Offset", "tp",
     ]
     DEFAULT_DATA_DIR = Path(__file__).resolve().parent / "data"
-    ERROR_LABELS_CSV = Path(__file__).resolve().parent / "error_labels.csv"
+    ERROR_LABELS_CSV = Path(__file__).resolve().parent / "quality" / "error_labels.csv"
 
     _NOISE_COLS = ["static_noise", "burst_noise", "electrodes_problems"]
     _FOLD_TRAIN = list(range(1, 9))
@@ -91,7 +91,7 @@ class PTBXLDataset(Dataset):
             if not err_path.exists():
                 raise FileNotFoundError(
                     f"Error labels CSV not found at {err_path}. "
-                    "Run `python ptbxl/generate_error_labels.py` to generate it."
+                    "Run `python ptbxl/quality/generate_error_labels.py` to generate it."
                 )
             self._error_df = pd.read_csv(err_path, index_col="ecg_id")
             self._error_df["error_tags"] = self._error_df["error_tags"].fillna("")

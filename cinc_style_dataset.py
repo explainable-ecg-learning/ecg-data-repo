@@ -105,13 +105,13 @@ class CinCStyleDataset(Dataset):
         with open(hea_path) as f:
             for line in f:
                 line = line.strip()
-                m_dx = re.search(r"#Dx:\s*(.+)", line, re.IGNORECASE)
+                m_dx = re.search(r"#\s*Dx:\s*(.+)", line, re.IGNORECASE)
                 if m_dx:
                     snomed_codes = [c.strip() for c in m_dx.group(1).split(",") if c.strip()]
-                m_age = re.search(r"#Age:\s*(\d+\.?\d*)", line, re.IGNORECASE)
+                m_age = re.search(r"#\s*Age:\s*(\d+\.?\d*)", line, re.IGNORECASE)
                 if m_age:
                     age = float(m_age.group(1))
-                m_sex = re.search(r"#Sex:\s*(\w+)", line, re.IGNORECASE)
+                m_sex = re.search(r"#\s*Sex:\s*(\w+)", line, re.IGNORECASE)
                 if m_sex:
                     sex = m_sex.group(1)
 

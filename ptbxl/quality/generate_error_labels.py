@@ -8,10 +8,10 @@ Combines four audit domains discovered during exploratory data analysis:
   4. Waveform & Delineation Defects (err_sig_*, err_seg_*) across all 21,799 records
 
 Usage:
-    .venv/bin/python ptbxl/generate_error_labels.py
+    .venv/bin/python ptbxl/quality/generate_error_labels.py
 
 Output:
-    ptbxl/error_labels.csv
+    ptbxl/quality/error_labels.csv
 """
 
 from __future__ import annotations
@@ -31,7 +31,8 @@ import pandas as pd
 import wfdb
 from scipy import signal as sp_signal
 
-PTBXL_DIR = Path(__file__).resolve().parent
+QUALITY_DIR = Path(__file__).resolve().parent
+PTBXL_DIR = QUALITY_DIR.parent
 REPO_ROOT = PTBXL_DIR.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
@@ -40,7 +41,7 @@ from ptbxl.dataset import PTBXLDataset
 
 DATA_DIR = PTBXL_DIR / "data"
 SEG_ZIP = DATA_DIR / "ptbxl_segmentations_8bit.zip"
-OUT_CSV = PTBXL_DIR / "error_labels.csv"
+OUT_CSV = QUALITY_DIR / "error_labels.csv"
 
 LEADS = PTBXLDataset.LEADS
 LEAD_IDX = {ld: i for i, ld in enumerate(LEADS)}
