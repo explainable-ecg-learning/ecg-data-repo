@@ -48,10 +48,9 @@ class CinCStyleDataset(Dataset):
         self.root = Path(root)
         self.transform = transform
 
-        # ── load record list ───────────────────────────────────────────
+        # ── load record list (supports flat RECORDS or nested subdir/RECORDS) ──
         records_file = self.root / "RECORDS"
-        with open(records_file) as f:
-            self._records: list[str] = [line.strip() for line in f if line.strip()]
+        self._records: list[str] = self._expand_records(records_file, rel_prefix="")
 
         # ── load SNOMED-CT code → name mapping ─────────────────────────
         label_csv = self.root / self.LABEL_CSV
@@ -95,6 +94,22 @@ class CinCStyleDataset(Dataset):
         }
 
     # ── helpers ────────────────────────────────────────────────────────
+    def _expand_records(self, records_file: Path, rel_prefix: str) -> list[str]:
+        """Recursively expand RECORDS files when entries point to subdirectories."""
+        out: list[str] = []
+        with open(records_file) as f:
+            entries = [line.strip() for line in f if line.strip()]
+        for entry in entries:
+            clean = entry.rstrip("/")
+            rel = f"{rel_prefix}/{clean}" if rel_prefix else clean
+            nested = self.root / rel / "RECORDS"
+            if entry.endswith("/") or nested.is_file():
+                if nested.is_file():
+                    out.extend(self._expand_records(nested, rel_prefix=rel))
+            else:
+                out.append(rel)
+        return out
+
     @staticmethod
     def _parse_header(hea_path: str) -> tuple[list[str], Optional[float], Optional[str]]:
         """Extract SNOMED-CT Dx codes, age, and sex from a .hea file."""
