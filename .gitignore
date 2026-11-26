@@ -223,5 +223,6 @@ mimic_iv_ecg/data/
 chapman_shaoxing/data/
 georgia_ecg/data/
 code15/data/
+combined/data/
 
 wget-log*

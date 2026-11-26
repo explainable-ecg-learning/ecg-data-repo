@@ -6,17 +6,18 @@ PyTorch dataset classes, download scripts, data-quality audits, and per-record e
 
 ## Summary
 
-Across all five datasets (**PTB-XL**, **MIMIC-IV-ECG**, **Georgia 12-Lead ECG**, **Chapman-Shaoxing**, and **CODE-15%**), `31` executed Jupyter notebooks audit metadata, diagnostic labels, signal integrity, spectra, wave delineation (`Zenodo 7610236` & `NeuroKit2`), and anomalies, producing versioned per-record error-label tables under `<dataset>/quality/`:
+Across all five source datasets (**PTB-XL**, **MIMIC-IV-ECG**, **Georgia 12-Lead ECG**, **Chapman-Shaoxing**, and **CODE-15%**) plus the unified **Combined** corpus, `41` executed Jupyter notebooks audit metadata, diagnostic labels, signal integrity, spectra, wave delineation (`Zenodo 7610236` & `NeuroKit2`), anomalies, preprocessing, and cross-dataset comparisons, producing versioned per-record error-label tables under `<dataset>/quality/`:
 
 | Dataset | Audited Records | Error Flags | `0_clean` | `1_minor_warning` | `2_moderate_anomaly` | `3_severe_error` | Notebooks |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| **PTB-XL** (`ptbxl/quality/error_labels.csv`) | `21,799` | `24` | `10,154` (`46.6%`) | `8,036` (`36.9%`) | `2,695` (`12.4%`) | `914` (`4.2%`) | `9` (`00`–`08`) |
-| **MIMIC-IV-ECG** (`mimic_iv_ecg/quality/error_labels.csv.gz`) | `800,035` | `15` | `421,460` (`52.7%`) | `333,848` (`41.7%`) | `6,865` (`0.9%`) | `37,862` (`4.7%`) | `6` (`00`–`05`) |
-| **Georgia ECG** (`georgia_ecg/quality/error_labels.csv`) | `10,344` | `18` | `8,770` (`84.8%`) | `941` (`9.1%`) | `584` (`5.6%`) | `49` (`0.5%`) | `6` (`00`–`05`) |
-| **Chapman-Shaoxing** (`chapman_shaoxing/quality/error_labels.csv`) | `45,053` | `10` | `29,708` (`65.9%`) | `1,753` (`3.9%`) | `13,273` (`29.5%`) | `319` (`0.7%`) | `5` (`00`–`04`) |
-| **CODE-15%** (`code15/quality/error_labels.csv.gz`) | `345,779` | `12` | `79,857` (`23.1%`) | `158,091` (`45.7%`) | `2,052` (`0.6%`) | `105,779` (`30.6%`)* | `5` (`00`–`04`) |
+| **PTB-XL** (`ptbxl/quality/error_labels.csv`) | `21,799` | `24` | `10,154` (`46.6%`) | `8,036` (`36.9%`) | `2,695` (`12.4%`) | `914` (`4.2%`) | `10` (`00`–`09`) |
+| **MIMIC-IV-ECG** (`mimic_iv_ecg/quality/error_labels.csv.gz`) | `800,035` | `15` | `421,460` (`52.7%`) | `333,848` (`41.7%`) | `6,865` (`0.9%`) | `37,862` (`4.7%`) | `7` (`00`–`06`) |
+| **Georgia ECG** (`georgia_ecg/quality/error_labels.csv`) | `10,344` | `18` | `8,770` (`84.8%`) | `941` (`9.1%`) | `584` (`5.6%`) | `49` (`0.5%`) | `7` (`00`–`06`) |
+| **Chapman-Shaoxing** (`chapman_shaoxing/quality/error_labels.csv`) | `45,053` | `10` | `29,708` (`65.9%`) | `1,753` (`3.9%`) | `13,273` (`29.5%`) | `319` (`0.7%`) | `6` (`00`–`05`) |
+| **CODE-15%** (`code15/quality/error_labels.csv.gz`) | `345,779` | `12` | `79,857` (`23.1%`) | `158,091` (`45.7%`) | `2,052` (`0.6%`) | `105,779` (`30.6%`)* | `6` (`00`–`05`) |
+| **Combined** (`combined/quality/error_labels.csv.gz`) | `547,452` | `10` | `126,374` (`23.1%`) | `419,745` (`76.7%`)** | `1,333` (`0.2%`) | `0` (`0.0%`) | `5` (`00`–`04`) |
 
-*\*CODE-15% `3_severe_error` reflects `105,779` exams belonging to unextracted/undownloaded HDF5 parts (`exams_part12..17`); the `240,000` exams present in `exams_part0..11.hdf5` are automatically indexed when `only_available_parts=True`.*
+*\*CODE-15% `3_severe_error` reflects `105,779` exams belonging to unextracted/undownloaded HDF5 parts (`exams_part12..17`); the `240,000` exams present in `exams_part0..11.hdf5` are automatically indexed when `only_available_parts=True`. \*\*Combined `1_minor_warning` is driven almost entirely by the `419,441` MIMIC-IV-ECG studies whose age/sex/labels reside in MIMIC-IV Clinical (`0.00%` residual `50/60 Hz` mains, `0.00%` NaN/flatline, `0.00%` severe errors).*
 
 ---
 
@@ -34,32 +35,39 @@ ecg-data-repo/
 │   ├── dataset.py              # PTBXLDataset (100/500 Hz, soft segmentations, error labels)
 │   ├── download.sh             # PhysioNet PTB-XL v1.0.3 + Zenodo 7610236 segmentations
 │   ├── quality/                # error_labels.csv (21,799 rows) + generate_error_labels.py
-│   ├── notebooks/              # 00–08 executed exploration & cleaning notebooks (9 total)
+│   ├── notebooks/              # 00–09 executed exploration & comparison notebooks (10 total)
 │   └── data/                   # Raw data (gitignored)
 ├── mimic_iv_ecg/
 │   ├── dataset.py              # MIMICIVECGDataset (subject splits, sentinel cleaning, error labels)
 │   ├── download.sh             # PhysioNet MIMIC-IV-ECG v1.0
 │   ├── quality/                # error_labels.csv.gz (800,035 rows) + generate_error_labels.py
-│   ├── notebooks/              # 00–05 executed exploration & cleaning notebooks (6 total)
+│   ├── notebooks/              # 00–06 executed exploration & comparison notebooks (7 total)
 │   └── data/                   # Raw data (gitignored)
 ├── georgia_ecg/
 │   ├── dataset.py              # GeorgiaECGDataset (CinC 2020 SNOMED-CT mapping, error labels)
 │   ├── download.sh             # PhysioNet/CinC 2020 training/georgia
 │   ├── quality/                # error_labels.csv (10,344 rows), generate_error_labels.py, dx_mapping_*.csv
-│   ├── notebooks/              # 00–05 executed exploration & cleaning notebooks (6 total)
+│   ├── notebooks/              # 00–06 executed exploration & comparison notebooks (7 total)
 │   └── data/                   # Raw data (gitignored)
 ├── chapman_shaoxing/
 │   ├── dataset.py              # ChapmanShaoxingDataset (nested RECORDS expansion, error labels)
 │   ├── download.sh             # PhysioNet ecg-arrhythmia 1.0.0
 │   ├── quality/                # error_labels.csv (45,053 rows) + generate_error_labels.py
-│   ├── notebooks/              # 00–04 executed exploration & cleaning notebooks (5 total)
+│   ├── notebooks/              # 00–05 executed exploration & comparison notebooks (6 total)
 │   └── data/                   # Raw data (gitignored)
-└── code15/
-    ├── dataset.py              # CODE15Dataset (patient splits, partial HDF5 filter, error labels)
-    ├── download.sh             # Zenodo CODE-15% (18 HDF5 parts + exams.csv)
-    ├── quality/                # error_labels.csv.gz (345,779 rows) + generate_error_labels.py
-    ├── notebooks/              # 00–04 executed exploration & cleaning notebooks (5 total)
-    └── data/                   # Raw data (gitignored)
+├── code15/
+│   ├── dataset.py              # CODE15Dataset (patient splits, partial HDF5 filter, error labels)
+│   ├── download.sh             # Zenodo CODE-15% (18 HDF5 parts + exams.csv)
+│   ├── quality/                # error_labels.csv.gz (345,779 rows) + generate_error_labels.py
+│   ├── notebooks/              # 00–05 executed exploration & comparison notebooks (6 total)
+│   └── data/                   # Raw data (gitignored)
+└── combined/
+    ├── preprocessing.py        # Unified resampling, bandpass, 50/60 Hz notch, Savitzky-Golay smoothing
+    ├── build_combined.py       # CLI builder combining cleaned (0_clean) ECGs into sharded HDF5
+    ├── dataset.py              # CombinedECGDataset (patient-disjoint splits, error labels)
+    ├── quality/                # error_labels.csv.gz (547,452 rows) + generate_error_labels.py
+    ├── notebooks/              # 00–04 executed verification & exploration notebooks (5 total)
+    └── data/                   # Sharded HDF5 + metadata.csv.gz (gitignored)
 ```
 
 ---
@@ -89,6 +97,9 @@ ecg-data-repo/
 .venv/bin/python georgia_ecg/quality/generate_error_labels.py
 .venv/bin/python chapman_shaoxing/quality/generate_error_labels.py
 .venv/bin/python code15/quality/generate_error_labels.py
+
+# Build the combined, cleaned, resampled & denoised dataset (0_clean only)
+.venv/bin/python combined/build_combined.py
 
 # Launch Jupyter Lab using the .venv kernel (ecg-venv)
 .venv/bin/jupyter lab
@@ -160,6 +171,7 @@ Nine executed Jupyter notebooks document PTB-XL v1.0.3 data quality, cleaning, s
 | [`06_soft_segmentations_delineation.ipynb`](ptbxl/notebooks/06_soft_segmentations_delineation.ipynb) | [Zenodo 7610236](https://zenodo.org/records/7610236) 24-class soft segmentations (`v1.0.1` vs `v1.0.3` reconciliation, entropy SQI, PR/QRS/QTc intervals, and `NeuroKit2` benchmark) |
 | [`07_anomalies_filtered_samples_and_anthropometrics.ipynb`](ptbxl/notebooks/07_anomalies_filtered_samples_and_anthropometrics.ipynb) | Exact census of filtered-out vs retained ECGs, clinical/signal differences, and forensic inspection of `height`/`weight` outliers and their ECGs |
 | [`08_error_labels_catalog.ipynb`](ptbxl/notebooks/08_error_labels_catalog.ipynb) | Full-cohort catalog of [`ptbxl/quality/error_labels.csv`](ptbxl/quality/error_labels.csv) (`24` binary `err_*` flags + `4` severity tiers) with waveform galleries and `PTBXLDataset` filtering examples |
+| [`09_cross_dataset_comparison.ipynb`](ptbxl/notebooks/09_cross_dataset_comparison.ipynb) | Cross-dataset benchmark comparing **PTB-XL** against MIMIC-IV-ECG, Georgia ECG, Chapman-Shaoxing, and CODE-15% (scale, demographics, RMS/Einthoven/PSD, error taxonomy, and clean Lead-II strips) |
 
 **Per-Record Error Labels (`ptbxl/quality/error_labels.csv`)**
 
@@ -224,6 +236,7 @@ Six executed Jupyter notebooks audit all `800,035` MIMIC-IV-ECG studies (`161,35
 | [`03_report_statements_and_filter_confounders.ipynb`](mimic_iv_ecg/notebooks/03_report_statements_and_filter_confounders.ipynb) | Top 20 machine report statements, `23,230` lead-reversal warnings, and hardware `bandwidth`/`filtering` (`50 Hz` US notch, `<not specified>`) confounders |
 | [`04_waveform_integrity_500hz_and_neurokit2.ipynb`](mimic_iv_ecg/notebooks/04_waveform_integrity_500hz_and_neurokit2.ipynb) | Stratified `500 Hz` waveform scan (`NaN`, flatlines, `>10 mV`, Einthoven), `50 Hz` vs `60 Hz` notch PSD proof, and `NeuroKit2` vs MIMIC cart interval agreement |
 | [`05_anomalies_and_error_labels_catalog.ipynb`](mimic_iv_ecg/notebooks/05_anomalies_and_error_labels_catalog.ipynb) | Full-cohort catalog of [`mimic_iv_ecg/quality/error_labels.csv.gz`](mimic_iv_ecg/quality/error_labels.csv.gz) (`15` `err_*` flags + `4` severity tiers), waveform galleries, and `MIMICIVECGDataset` filtering |
+| [`06_cross_dataset_comparison.ipynb`](mimic_iv_ecg/notebooks/06_cross_dataset_comparison.ipynb) | Cross-dataset benchmark comparing **MIMIC-IV-ECG** against PTB-XL, Georgia ECG, Chapman-Shaoxing, and CODE-15% (scale, demographics, RMS/Einthoven/PSD, error taxonomy, and clean Lead-II strips) |
 
 **Per-Study Error Labels (`mimic_iv_ecg/quality/error_labels.csv.gz`)**
 
@@ -277,6 +290,7 @@ Five executed Jupyter notebooks audit all `45,053` Chapman-Shaoxing records (`50
 | [`02_snomed_labels_and_cooccurrence.ipynb`](chapman_shaoxing/notebooks/02_snomed_labels_and_cooccurrence.ipynb) | `ConditionNames_SNOMED-CT.csv` duplicate-code audit, `13,119` unmapped SNOMED codes, label prevalence, and co-occurrence matrix |
 | [`03_waveform_500hz_and_neurokit2.ipynb`](chapman_shaoxing/notebooks/03_waveform_500hz_and_neurokit2.ipynb) | `500 Hz` waveform integrity (`NaN`, flatlines, `>10 mV`, Einthoven), `50 Hz` China mains hum PSD, and `NeuroKit2` delineation & intervals |
 | [`04_anomalies_and_error_labels_catalog.ipynb`](chapman_shaoxing/notebooks/04_anomalies_and_error_labels_catalog.ipynb) | Full-cohort catalog of [`chapman_shaoxing/quality/error_labels.csv`](chapman_shaoxing/quality/error_labels.csv) (`10` `err_*` flags + `4` severity tiers), waveform galleries, and `ChapmanShaoxingDataset` filtering |
+| [`05_cross_dataset_comparison.ipynb`](chapman_shaoxing/notebooks/05_cross_dataset_comparison.ipynb) | Cross-dataset benchmark comparing **Chapman-Shaoxing** against PTB-XL, MIMIC-IV-ECG, Georgia ECG, and CODE-15% (scale, demographics, RMS/Einthoven/PSD, error taxonomy, and clean Lead-II strips) |
 
 **Per-Record Error Labels (`chapman_shaoxing/quality/error_labels.csv`)**
 
@@ -331,6 +345,7 @@ Six executed Jupyter notebooks audit all `10,344` Georgia 12-Lead ECG records (`
 | [`03_waveform_integrity_and_500hz_spectra.ipynb`](georgia_ecg/notebooks/03_waveform_integrity_and_500hz_spectra.ipynb) | `500 Hz` signal defects (`NaN`, flatlines, `>10 mV` spikes), Einthoven/Goldberger lead physics, `60 Hz` US mains hum PSD, and 12-lead beat templates |
 | [`04_neurokit2_delineation_and_intervals.ipynb`](georgia_ecg/notebooks/04_neurokit2_delineation_and_intervals.ipynb) | `NeuroKit2` `500 Hz` DWT delineation, rhythm/HR sanity (`SB`/`NSR`/`STach`/`AF`), PR/QRS/QTc clinical validation, and visual overlays |
 | [`05_anomalies_and_error_labels_catalog.ipynb`](georgia_ecg/notebooks/05_anomalies_and_error_labels_catalog.ipynb) | Full-cohort catalog of [`georgia_ecg/quality/error_labels.csv`](georgia_ecg/quality/error_labels.csv) (`18` `err_*` flags + `4` severity tiers), waveform galleries, and `GeorgiaECGDataset` filtering |
+| [`06_cross_dataset_comparison.ipynb`](georgia_ecg/notebooks/06_cross_dataset_comparison.ipynb) | Cross-dataset benchmark comparing **Georgia 12-Lead ECG** against PTB-XL, MIMIC-IV-ECG, Chapman-Shaoxing, and CODE-15% (scale, demographics, RMS/Einthoven/PSD, error taxonomy, and clean Lead-II strips) |
 
 **Per-Record Error Labels (`georgia_ecg/quality/error_labels.csv`)**
 
@@ -395,6 +410,7 @@ Five executed Jupyter notebooks audit all `345,779` CODE-15% exams (`233,770` pa
 | [`02_labels_and_survival_audit.ipynb`](code15/notebooks/02_labels_and_survival_audit.ipynb) | 6-class binary prevalence & co-occurrence, `50.1%` unlabeled non-normal exams, clinical conflicts (`AF`+sinus, `RBBB`+`LBBB`), and `death`/`timey` survival missingness (`32.4%`) |
 | [`03_waveform_400hz_padding_and_neurokit2.ipynb`](code15/notebooks/03_waveform_400hz_padding_and_neurokit2.ipynb) | `400 Hz` symmetric zero-padding (`7 s` vs `10 s` → `4,096`), signal integrity & `60 Hz` Brazil mains hum PSD, and `NeuroKit2` delineation on unpadded segments |
 | [`04_anomalies_and_error_labels_catalog.ipynb`](code15/notebooks/04_anomalies_and_error_labels_catalog.ipynb) | Full-cohort catalog of [`code15/quality/error_labels.csv.gz`](code15/quality/error_labels.csv.gz) (`12` `err_*` flags + `4` severity tiers), waveform galleries, and `CODE15Dataset` filtering |
+| [`05_cross_dataset_comparison.ipynb`](code15/notebooks/05_cross_dataset_comparison.ipynb) | Cross-dataset benchmark comparing **CODE-15%** against PTB-XL, MIMIC-IV-ECG, Georgia ECG, and Chapman-Shaoxing (scale, demographics, RMS/Einthoven/PSD, error taxonomy, and clean Lead-II strips) |
 
 **Per-Exam Error Labels (`code15/quality/error_labels.csv.gz`)**
 
@@ -402,6 +418,66 @@ Generated across all `345,779` exams (`79,857` `0_clean`, `158,091` `1_minor_war
 
 ```bash
 python code15/quality/generate_error_labels.py
+```
+
+---
+
+### Combined Clean Dataset (`combined/`)
+
+Builds one unified, pre-cleaned, resampled, denoised, and smoothed 12-lead ECG corpus from the `0_clean` subset of all five datasets (**`547,452` clean recordings** across **`220,313` unique patients** in `22` compressed sharded HDF5 files `combined/data/combined_part000..021.hdf5`) plus a patient-disjoint `metadata.csv.gz` (`train`: `438,267`, `val`: `56,159`, `test`: `53,026`) and `build_config.json`.
+
+**Preprocessing Pipeline (`combined/preprocessing.py`)**
+1. **Quality filtering**: Keeps only records with `severity_tier <= max_severity` (default `0_clean` only) from each `<dataset>/quality/error_labels.*`.
+2. **Sanitization & padding trim**: Interpolates isolated NaN/Inf values, removes per-lead DC offset, and trims CODE-15% symmetric zero-padding before filtering.
+3. **Sampling-rate harmonization**: Polyphase anti-aliased resampling (`scipy.signal.resample_poly`) to a unified sampling rate (default `500 Hz`, converting CODE-15% `400 Hz → 500 Hz`).
+4. **Baseline & HF bandpass**: Zero-phase 4th-order Butterworth bandpass (`0.5–40 Hz`, `sosfiltfilt`).
+5. **Dual mains-hum notch denoising**: Zero-phase IIR notch filters at both `50 Hz` (Europe/China) and `60 Hz` (USA/Brazil), `Q = 30`.
+6. **Smoothing**: Zero-phase Savitzky-Golay filter (`~14 ms` window, `polyorder = 3`) to suppress residual EMG noise while preserving QRS sharpness.
+7. **Length standardization & QC gate**: Center-crops/pads to `10.0 s` (`(12, 5000)`), clips extreme spikes (`±20 mV`), rejects any remaining flatline/non-finite leads, and assigns source-stratified, patient-disjoint `train`/`val`/`test` splits.
+
+**Build & Usage**
+
+```bash
+# Full build (0_clean only, 500 Hz, 10 s, float16 + lzf HDF5 shards)
+.venv/bin/python combined/build_combined.py
+
+# Fast dev build (e.g. 500 clean records per dataset, z-score normalized)
+.venv/bin/python combined/build_combined.py --max-per-dataset 500 --normalize zscore
+```
+
+```python
+from combined import CombinedECGDataset
+
+train_ds = CombinedECGDataset.train("combined/data", load_error_labels=True, max_error_severity=2)
+val_ds   = CombinedECGDataset.val("combined/data")
+test_ds  = CombinedECGDataset.test("combined/data")
+
+sample = train_ds[0]
+# sample["signal"]           # float32 ndarray (12, 5000)
+# sample["source_dataset"]   # e.g. "ptbxl", "mimic_iv_ecg", "code15", ...
+# sample["source_record_id"] # original record/study/exam ID
+# sample["patient_id"]       # globally unique "<source>:<patient_id>"
+# sample["labels"]           # source diagnostic labels
+# sample["meta"]             # global_id, age, sex, original_fs, severity_tier, split
+# sample["error_labels"]     # dict of severity_tier, error_tags, flags when load_error_labels=True
+```
+
+**Data Exploration & Verification (`combined/notebooks/`)**
+
+Five executed Jupyter notebooks audit the combined preprocessed corpus (`500 Hz`, `10 s`):
+
+| Notebook | Focus |
+|---|---|
+| [`00_sample_waveforms.ipynb`](combined/notebooks/00_sample_waveforms.ipynb) | Quick 12-lead waveform & multi-lead lineplot visualizations for samples `11`, `13`, `19`, `92`, and `42` |
+| [`01_cohort_composition_and_splits.ipynb`](combined/notebooks/01_cohort_composition_and_splits.ipynb) | Source-dataset balance, HDF5 shard inventory, zero-leakage `train`/`val`/`test` verification, and harmonized age/sex demographics |
+| [`02_preprocessing_before_after_and_spectra.ipynb`](combined/notebooks/02_preprocessing_before_after_and_spectra.ipynb) | Raw vs. cleaned waveform & Welch PSD proof (`400 → 500 Hz` resampling, `0.5–40 Hz` bandpass, `50/60 Hz` notch, Savitzky-Golay smoothing) |
+| [`03_waveform_integrity_and_neurokit2.ipynb`](combined/notebooks/03_waveform_integrity_and_neurokit2.ipynb) | Post-cleaning RMS amplitude, Einthoven lead physics, residual mains power (`0.00%`), and `NeuroKit2` `500 Hz` HR sanity |
+| [`04_quality_audit_and_error_labels.ipynb`](combined/notebooks/04_quality_audit_and_error_labels.ipynb) | Post-build catalog of [`combined/quality/error_labels.csv.gz`](combined/quality/error_labels.csv.gz) (`10` `err_*` flags + `4` tiers across `547,452` ECGs) and `CombinedECGDataset` filtering smoke test |
+
+**Post-Build Error Labels (`combined/quality/error_labels.csv.gz`)**
+
+```bash
+.venv/bin/python combined/quality/generate_error_labels.py
 ```
 
 ---
